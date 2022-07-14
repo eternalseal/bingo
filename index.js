@@ -20,15 +20,42 @@
  */
 
 function checkForBingo (bingoCard, drawnNumbers) {
-  // this code for debug purposes, you can remove.
-  console.log('Drawn Numbers: ' + JSON.stringify(drawnNumbers));
-
+  let obj = {};
   for (let i=0, len=bingoCard.length; i<len; i++) {
     let row = Math.floor(i/5);
     let col = i % 5;
-   //  console.log(`${row},${col}: ${bingoCard[i]}`);
+    // separate all rows and columns in separate arrays
+    // checking both null and undefined
+    if (obj[`row-${row}`] == null) {
+      obj[`row-${row}`] = [];
+    }
+    if (obj[`col-${col}`] == null) {
+      obj[`col-${col}`] = [];
+    }
+    obj[`row-${row}`].push(bingoCard[i]);
+    obj[`col-${col}`].push(bingoCard[i]);
+
+    // separate all diagonals entries in arrays
+    if (obj['diag-0'] === undefined) {
+      obj['diag-0'] = [];
+    }
+    if (obj['diag-1'] === undefined) {
+      obj['diag-1'] = [];
+    }
+    if (row === col) {
+      obj['diag-0'].push(bingoCard[i]);
+    }
+    if (row + col === 4) {
+      obj['diag-1'].push(bingoCard[i]);
+    }
   }
 
+  // check if any of the rows, columns, or diagonals have all the values in drawnNumbers
+  for (let key in obj) {
+    if (obj[key].every(num => num === 'FREE' || drawnNumbers.includes(num))) {
+      return true;
+    }
+  }
   return false;
 }
 
@@ -37,7 +64,7 @@ module.exports = checkForBingo;
 // here are some samples
 
 // this should return true with diagonal + free
-checkForBingo(
+const bingoResult1 = checkForBingo(
   [
     8, 29, 35, 54, 65,
     13, 24, 44, 48, 67,
@@ -49,9 +76,10 @@ checkForBingo(
     8, 24, 53, 72
   ]
 );
+console.log("bingoResult1", bingoResult1)
 
 // this should return false
-checkForBingo(
+const bingoResult2 = checkForBingo(
   [
    8, 29, 35, 54, 65,
    13, 24, 44, 48, 67,
@@ -63,3 +91,4 @@ checkForBingo(
     1, 33, 53, 65, 29, 75
   ]
 );
+console.log('bingoResult2',bingoResult2);
